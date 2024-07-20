@@ -4,56 +4,41 @@ import { TurnView } from "./turn_view";
 import { BackSide, Material, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, PlaneGeometry } from "three";
 import { useLoader } from "@react-three/fiber";
 import { FBXLoader, GLTFLoader } from "three/examples/jsm/Addons.js";
-
-function taiko() {
-  const objbase = useLoader(GLTFLoader, "./taiko.glb");
-  const obj = objbase.scene.clone();
-  obj.scale.setScalar(0.1);
-  obj.traverse((child : Object3D) => {
-    if ("material" in child) console.log(child.material);
-  });
-  obj.rotateY(Math.PI/2)
-  obj.rotateX(Math.PI/4)
-  return obj;
-}
-function gatton() {
-  const objbase = useLoader(GLTFLoader, "./gatton.glb");
-  const obj = objbase.scene.clone();
-  obj.scale.setScalar(0.075);
-  obj.traverse((child : Object3D) => {
-    if ("material" in child) console.log(child.material);
-  });
-  obj.rotateY(Math.PI/2)
-  obj.rotateX(Math.PI/2 - Math.PI/16)
-  return obj;
-}
-function box() {
-  const objbase = useLoader(GLTFLoader, "./luggage.glb");
-  const obj = objbase.scene.clone();
-  obj.scale.setScalar(0.075);
-  obj.traverse((child : Object3D) => {
-    if ("material" in child) console.log(child.material);
-  });
-  obj.rotateY(Math.PI/4)
-  return obj;
-}
-function monitor() {
-  const objbase = useLoader(GLTFLoader, "./monitor.glb");
-  const obj = objbase.scene.clone();
-  obj.scale.setScalar(0.05);
-  obj.traverse((child : Object3D) => {
-    if ("material" in child) console.log(child.material);
-  });
-  obj.rotateY(Math.PI)
-  return obj;
-}
+import { useEffect } from "react";
 
 export default function Home() {
+  // Load Taiko object
+  const taiko = useLoader(GLTFLoader, "./taiko.glb").scene;
+  useEffect(()=>{ // transforms
+    taiko.scale.setScalar(0.1);
+    taiko.rotation.set(Math.PI/4, Math.PI/2, 0, "YXZ");
+  }, [taiko]);
+  
+  // Load Sierpinski triangle
+  const sierpinski = useLoader(GLTFLoader, "./gatton.glb").scene;
+  useEffect(()=>{ // transforms
+    sierpinski.scale.setScalar(0.075);
+    sierpinski.rotation.set(7*Math.PI/16, Math.PI/2, 0, "YXZ");
+  }, [sierpinski]);
+  
+  // Load box
+  const box = useLoader(GLTFLoader, "./luggage.glb").scene;
+  useEffect(()=>{ // transforms
+    box.scale.setScalar(0.075);
+    box.rotation.set(0, Math.PI/4, 0, "YXZ");
+  }, [box]);
+  
+  // Load monitor
+  const monitor = useLoader(GLTFLoader, "./monitor.glb").scene;
+  useEffect(()=>{ // transforms
+    monitor.scale.setScalar(0.05);
+    monitor.rotation.set(0, Math.PI, 0, "YXZ");
+  }, [monitor]);
 
   return <main>
     <div className="h-screen">
       <TurnView 
-        content={[gatton(), taiko(), box(), monitor()]}
+        content={[sierpinski, taiko, box, monitor]}
         text={[`
           <p>I am a Gatton Academy alumnus.</p>
           <p>Living away from my family for the first time was a great way for me to transition to my current studies at UT Dallas. Being surrounded by other very smart CS students propelled my problem-solving skills.</p>
