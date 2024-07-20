@@ -184,7 +184,7 @@ function OrbitText(
         typewriterRef.current?.deleteAll(0.05).start().typeString(text[focus]).start().callFunction(()=>setOrbitTextFinished(true));
     }, [focus]);
 
-    return <div>
+    return <div className="p-10">
         <Typewriter 
             onInit={(typewriter) => {
                 setOrbitTextFinished(false);
