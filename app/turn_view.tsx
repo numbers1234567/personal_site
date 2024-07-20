@@ -1,9 +1,9 @@
 "use client"
 import { ReactElement, useEffect, useRef, useState } from "react";
 import { Color, Euler, Mesh, Object3D, RectAreaLight, Vector3 } from "three";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import TWEEN from "@tweenjs/tween.js";
-import { RectAreaLightHelper } from "three/examples/jsm/Addons.js";
+import { GLTFLoader, RectAreaLightHelper } from "three/examples/jsm/Addons.js";
 import Typewriter, { TypewriterClass } from 'typewriter-effect';
 
 function Tween() {
@@ -11,17 +11,41 @@ function Tween() {
       TWEEN.update();
     });
     return <></>;
-  }
-
-interface TurnViewProps {
-    content : Object3D[],
-    text : string[]
 }
 
 function OrbitContent(
-    {currentFocus, content, setOrbitContentFinished} :
-    {currentFocus : number, content : Object3D[], setOrbitContentFinished : (b:boolean)=>void}
+    {currentFocus, setOrbitContentFinished} :
+    {currentFocus : number, setOrbitContentFinished : (b:boolean)=>void}
 ) {
+    // Load Taiko object
+    const taiko = useLoader(GLTFLoader, "taiko.glb").scene;
+    useEffect(()=>{ // transforms
+        taiko.scale.setScalar(0.1);
+        taiko.rotation.set(Math.PI/4, Math.PI/2, 0, "YXZ");
+    }, [taiko]);
+    
+    // Load Sierpinski triangle
+    const sierpinski = useLoader(GLTFLoader, "gatton.glb").scene;
+    useEffect(()=>{ // transforms
+        sierpinski.scale.setScalar(0.075);
+        sierpinski.rotation.set(7*Math.PI/16, Math.PI/2, 0, "YXZ");
+    }, [sierpinski]);
+    
+    // Load box
+    const box = useLoader(GLTFLoader, "luggage.glb").scene;
+    useEffect(()=>{ // transforms
+        box.scale.setScalar(0.075);
+        box.rotation.set(0, Math.PI/4, 0, "YXZ");
+    }, [box]);
+    
+    // Load monitor
+    const monitor = useLoader(GLTFLoader, "monitor.glb").scene;
+    useEffect(()=>{ // transforms
+        monitor.scale.setScalar(0.05);
+        monitor.rotation.set(0, Math.PI, 0, "YXZ");
+    }, [monitor]);
+    const content = [sierpinski, taiko, box, monitor];
+
     const {camera} = useThree()
     let numChildren = content.length;
     const turnView = useRef<Mesh>(null);
@@ -51,7 +75,7 @@ function OrbitContent(
             parent.add(child);
         }
         return () => added.forEach(([parent, child]) => parent.remove(child) ); // cleanup
-    }, [content]);
+    }, []);
 
 
     // Move key points to position based on currentFocus
@@ -78,7 +102,7 @@ function OrbitContent(
             }
         )
         setTimeout(()=>setOrbitContentFinished(true),TRANS_TIME);
-    }, [content, currentFocus]);
+    }, [currentFocus]);
 
     // Add lights
     useEffect(() => {
@@ -122,9 +146,37 @@ function OrbitContent(
 }
 
 function OrbitText(
-    {text, currentFocus, setOrbitTextFinished} :
-    {text : string[], currentFocus : number, setOrbitTextFinished : (b : boolean)=>void}
+    {currentFocus, setOrbitTextFinished} :
+    {currentFocus : number, setOrbitTextFinished : (b : boolean)=>void}
 ) {
+    const text = [
+        `
+        <p>I am a Gatton Academy alumnus.</p>
+        <p>Living away from my family for the first time was a great way for me to transition to my current studies at UT Dallas. Being surrounded by other very smart CS students propelled my problem-solving skills.</p>
+        `,
+        `
+        <p>I study computer science at UT Dallas.</p>
+        <p>My main interest has been machine learning, so I've done research and projects based on ML.</p>
+        <p>Recently I've gotten into web development due to a personal ML project which involves web and my internship.</p>
+        <p>I got a wide monitor, and I swear it actually improves the quality of my work. A funny story is that it ended up being free.</p>
+        `,
+        `
+        <p>My family moved around the nation a bit while I was growing up.</p>
+        <p>Some places I've lived are:</p>
+        <list>
+        <li>Michigan</li>
+        <li>Iowa</li>
+        <li>Utah</li>
+        <li>Alabama (a couple cities)</li>
+        <li>Kentucky (a couple cities)</li>
+        </list>
+        `,
+        `
+        <p>One of my favorite games: Taiko no Tatsujin</p>
+        <p>This game simulates a drum. My favorite part is improving every day and seeing how my scores increase over time. I used to play osu!mania for a year and a half until I got bored. I got pretty decent at it, too.
+        `
+    ]
+
     let typewriterRef = useRef<TypewriterClass>();
     const focus = ((currentFocus % text.length) + text.length) % text.length;
     useEffect(() => {
@@ -144,10 +196,7 @@ function OrbitText(
     </div>
 }
 
-export function TurnView(
-    {content, text} : 
-    TurnViewProps
-) {
+export function TurnView({}) {
     const [currentFocus, setCurrentFocus] = useState<number>(0);
     const [orbitTextFinished, setOrbitTextFinished] = useState<boolean>(true);
     const [orbitContentFinished, setOrbitContentFinished] = useState<boolean>(true);
@@ -161,7 +210,7 @@ export function TurnView(
             <Canvas>
                 <Tween />
                 <color attach="background" args={["#EEEEEE"]} />
-                <OrbitContent currentFocus={currentFocus} content={content} setOrbitContentFinished={setOrbitContentFinished}/>
+                <OrbitContent currentFocus={currentFocus} setOrbitContentFinished={setOrbitContentFinished}/>
             </Canvas>
             {/* CONTROLS */}
             <div className="absolute w-full h-20 bottom-0">
@@ -199,7 +248,6 @@ export function TurnView(
         </div>
         <div className="float-right w-1/2 h-full" style={{fontFamily : "Consolas"}}>
             <OrbitText 
-                text={text} 
                 currentFocus={currentFocus}
                 setOrbitTextFinished={setOrbitTextFinished}/>
         </div>
