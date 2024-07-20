@@ -8,28 +8,28 @@ import { useEffect } from "react";
 
 export default function Home() {
   // Load Taiko object
-  const taiko = useLoader(GLTFLoader, "./taiko.glb").scene;
+  const taiko = useLoader(GLTFLoader, "taiko.glb").scene;
   useEffect(()=>{ // transforms
     taiko.scale.setScalar(0.1);
     taiko.rotation.set(Math.PI/4, Math.PI/2, 0, "YXZ");
   }, [taiko]);
   
   // Load Sierpinski triangle
-  const sierpinski = useLoader(GLTFLoader, "./gatton.glb").scene;
+  const sierpinski = useLoader(GLTFLoader, "gatton.glb").scene;
   useEffect(()=>{ // transforms
     sierpinski.scale.setScalar(0.075);
     sierpinski.rotation.set(7*Math.PI/16, Math.PI/2, 0, "YXZ");
   }, [sierpinski]);
   
   // Load box
-  const box = useLoader(GLTFLoader, "./luggage.glb").scene;
+  const box = useLoader(GLTFLoader, "luggage.glb").scene;
   useEffect(()=>{ // transforms
     box.scale.setScalar(0.075);
     box.rotation.set(0, Math.PI/4, 0, "YXZ");
   }, [box]);
   
   // Load monitor
-  const monitor = useLoader(GLTFLoader, "./monitor.glb").scene;
+  const monitor = useLoader(GLTFLoader, "monitor.glb").scene;
   useEffect(()=>{ // transforms
     monitor.scale.setScalar(0.05);
     monitor.rotation.set(0, Math.PI, 0, "YXZ");
