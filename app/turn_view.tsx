@@ -4,7 +4,7 @@ import { Color, Euler, Mesh, Object3D, RectAreaLight, Vector3 } from "three";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import TWEEN from "@tweenjs/tween.js";
 import { GLTFLoader, RectAreaLightHelper } from "three/examples/jsm/Addons.js";
-import Typewriter, { TypewriterClass } from 'typewriter-effect';
+import Typewriter, { TypewriterClass, TypewriterState } from 'typewriter-effect';
 
 function Tween() {
     useFrame(() => {
@@ -150,46 +150,59 @@ function OrbitText(
     {currentFocus : number, setOrbitTextFinished : (b : boolean)=>void}
 ) {
     const text = [
-        `
-        <p>I am a Gatton Academy alumnus.</p>
-        <p>Living away from my family for the first time was a great way for me to transition to my current studies at UT Dallas. Being surrounded by other very smart CS students propelled my problem-solving skills.</p>
-        `,
-        `
-        <p>I study computer science at UT Dallas.</p>
-        <p>My main interest has been machine learning, so I've done research and projects based on ML.</p>
-        <p>Recently I've gotten into web development due to a personal ML project which involves web and my internship.</p>
-        <p>I got a wide monitor, and I swear it actually improves the quality of my work. A funny story is that it ended up being free.</p>
-        `,
-        `
-        <p>My family moved around the nation a bit while I was growing up.</p>
-        <p>Some places I've lived are:</p>
-        <list>
+        [
+        '<p>I am a Gatton Academy alumnus.</p>',
+        '<p>Living away from my family for the first time was a great way for me to transition to my current studies at UT Dallas.</p>',
+        '<p>Being surrounded by other strong CS students propelled my problem-solving skills.</p>'
+        ],
+        [
+        '<p>I study computer science at UT Dallas.</p>',
+        '<p>My main interest has been machine learning, so I\'ve done research and projects based on ML.</p>',
+        '<p>Recently I\'ve gotten into web development due to a personal ML project which involves web and my internship.</p>',
+        '<p>I got a wide monitor, and I swear it actually improves the quality of my work. A funny story is that it ended up being free.</p>'
+        ],
+        [
+        '<p>My family moved around the nation a bit while I was growing up.</p>',
+        '<p>Some places I\'ve lived are:</p>',
+        `<list>
         <li>Michigan</li>
         <li>Iowa</li>
         <li>Utah</li>
         <li>Alabama (a couple cities)</li>
         <li>Kentucky (a couple cities)</li>
-        </list>
-        `,
-        `
-        <p>One of my favorite games: Taiko no Tatsujin</p>
-        <p>This game simulates a drum. My favorite part is improving every day and seeing how my scores increase over time. I used to play osu!mania for a year and a half until I got bored. I got pretty decent at it, too.
-        `
+        </list>`
+        ],
+        [
+        '<p>One of my favorite games: Taiko no Tatsujin</p>',
+        '<p>This game simulates a drum. My favorite part is improving every day and seeing how my scores increase over time. I used to play osu!mania for a year and a half until I got bored. I got pretty decent at it, too.'
+        ]
     ]
-
+    const thisStart = Date.now()
     let typewriterRef = useRef<TypewriterClass>();
-    const focus = ((currentFocus % text.length) + text.length) % text.length;
+    const interruptRef = useRef<number>(0);
+    
     useEffect(() => {
+        interruptRef.current = thisStart;
+        const focus = ((currentFocus % text.length) + text.length) % text.length;
         setOrbitTextFinished(false);
-        typewriterRef.current?.deleteAll(0.05).start().typeString(text[focus]).start().callFunction(()=>setOrbitTextFinished(true));
-    }, [focus]);
+        let done = -1;
+        function typeRemaining(index : number) {
+            setTimeout(()=>{ // Hotfix: for some reason, we need to give the typewriter a little bit of time to breath.
+                if (index == text[focus].length) return;
+                if (!typewriterRef.current) return;
+                if (interruptRef.current!=thisStart) return;
+                done=index;
+                typewriterRef.current.typeString(text[focus][index]).callFunction(()=>typeRemaining(index+1)).start();
+            })
+        }
+        typewriterRef.current?.deleteAll(0.03).start().callFunction(()=>typeRemaining(0));
+    }, [currentFocus, typewriterRef.current]);
 
     return <div className="p-10">
         <Typewriter 
             onInit={(typewriter) => {
                 setOrbitTextFinished(false);
-                typewriterRef.current = typewriter
-                typewriter.typeString(text[focus]).start().callFunction(()=>setOrbitTextFinished(true));
+                typewriterRef.current = typewriter;
             }}
             options={{cursor:"", delay : 0.125}}
         />
@@ -202,7 +215,7 @@ export function TurnView({}) {
     const [orbitContentFinished, setOrbitContentFinished] = useState<boolean>(true);
 
     function onButtonPress(newFocus : number) {
-        if (orbitContentFinished && orbitTextFinished) 
+        if (orbitContentFinished) 
             setCurrentFocus(newFocus);
     }
     return <div className="w-full h-full">
