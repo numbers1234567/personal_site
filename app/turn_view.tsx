@@ -152,14 +152,18 @@ function OrbitText(
     const text = [
         [
         '<p>I am a Gatton Academy alumnus.</p>',
-        '<p>Living away from my family for the first time was a great way for me to transition to my current studies at UT Dallas.</p>',
+        'Living away from my family for the first time', ' was a great way for me to transition to my current studies at UT Dallas.',
         '<p>Being surrounded by other strong CS students propelled my problem-solving skills.</p>'
         ],
         [
         '<p>I study computer science at UT Dallas.</p>',
         '<p>My main interest has been machine learning, so I\'ve done research and projects based on ML.</p>',
         '<p>Recently I\'ve gotten into web development due to a personal ML project which involves web and my internship.</p>',
-        '<p>I got a wide monitor, and I swear it actually improves the quality of my work. A funny story is that it ended up being free.</p>'
+        '<p>I\'m working on an app right now. It takes trending posts across all social media sites and compiles it for users in one view.</p>',
+        'Like most social media, user activity is tracked for better post recommendations. ',
+        'The main idea is that the user can customize their recommendation settings.', 'That is, if they are not interested in the news, they can switch to a different recommendation mode.',
+        '<p>I got a wide monitor, and I swear it actually improves the quality of my work. A funny story is that it ended up being free.</p>' ,
+        '<p>It was missing an HDMI cable which was supposed to come with it.</p>'
         ],
         [
         '<p>My family moved around the nation a bit while I was growing up.</p>',
@@ -170,11 +174,13 @@ function OrbitText(
         <li>Utah</li>
         <li>Alabama (a couple cities)</li>
         <li>Kentucky (a couple cities)</li>
-        </list>`
+        </list>`,
+        '<p>I\'m always ready for new adventures.</p>'
         ],
         [
         '<p>One of my favorite games: Taiko no Tatsujin</p>',
-        '<p>This game simulates a drum. My favorite part is improving every day and seeing how my scores increase over time. I used to play osu!mania for a year and a half until I got bored. I got pretty decent at it, too.'
+        '<p>This game simulates a drum. My favorite part is improving every day and seeing how my scores increase over time.</p> ',
+        'I used to play osu!mania for a year and a half until I got bored. I got pretty decent at it, too.'
         ]
     ]
     const thisStart = Date.now()
